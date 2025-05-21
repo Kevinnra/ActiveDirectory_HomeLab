@@ -156,6 +156,18 @@ ___
 ##### B:
 ![](/Screenshots/cmdSysteminfoDomain.png)
 
+
+
+
+
+
+
+
+
+
+
+
+
 ## 2. Active Directory Post-Installation Configuration
 
 ### **2.1 Create Organizational Units (OUs)**
@@ -281,7 +293,7 @@ $OU = "OU=IT,OU=Departments,DC=yourDomain,DC=local"
 Get-ADUser -Filter * -SearchBase $OU | Select Name, SamAccountName
 ```
 Expected Output:
-```
+```powershell
 Name         SamAccountName
 ----         -------------
 User 1       user1
@@ -462,22 +474,165 @@ gpresult /r  # On workstation
 
 
 
-
-
-
-
-
-
-
 ## 4. Helpdesk Simulation Workflows
 
-**4.1 Password Reset**
+### **4.1 Password Reset**
+**Scenario**: User calls saying "My password expired"  
+
+**Workflow**:  
+1. **Verify Identity**:  
+- Ask for employee ID and ticket number  
+- *Example Script*:  
+    "Thank you for calling IT. May I have your employee ID and the ticket number associated with this issue?"  
+
+2. **Reset Password**:  
+- **GUI (ADUC)**:  
+    - Right-click user → "Reset Password"  
+    - Set temporary password: `Temp@[Last4DigitsOfID]` (e.g., `Temp@1234`)  
+    - "User must change password at next logon"  
+
+- **PowerShell**:  
+    ```powershell
+    Set-ADAccountPassword -Identity "max.verstappen" -NewPassword (ConvertTo-SecureString "Temp@1234" -AsPlainText -Force) -Reset
+    Unlock-ADAccount -Identity "max.verstappen" # If locked out
+    ```
+
+3. **Documentation**:  
+- *Ticket Notes*:  
+    "Reset password per policy #IT-103. User educated on password complexity requirements. Case closed."  
+
+📸 **Screenshots**:[[[[[[[[[[]]]]]]]]]
+- ADUC password reset dialog  
+- Freshdesk ticket resolution screen  
+---
 
 
-**4.2 Account Lockout Troubleshooting**
+
+
+### **4.2 Account Lockout Troubleshooting**  
+**Scenario**: User reports "Account locked" after multiple failed attempts  
+
+**Diagnosis Steps**:  
+1. **Identify Lockout Source**:  
+   ```powershell
+   # Find locked account
+   Search-ADAccount -LockedOut | Select Name, LastLogonDate
+
+   # Check lockout events (Run on DC)
+   Get-EventLog -LogName Security -InstanceId 4740 -Newest 5 | Format-List
+   ```
+2. **Resolution**:
+    - **Unlock Account**:
+```powershell
+Unlock-ADAccount -Identity "max.verstappen"
+```
+ - **Educate User**:
+
+    "Your account was locked due to 5 failed attempts. Ensure Caps Lock is off and you're using the domain 'x.local'."
+3. **Prevention**:
+    - Deploy **Account Lockout Policy** via GPO:
+
+    `Computer Config → Policies → Windows Settings → Security Settings → Account Policies → Account Lockout Policy`
+    - Threshold: 10 attempts
+    - Duration: 30 minutes
+
+📸 Screenshots:
+
+PowerShell unlock command output
+GPO lockout policy settings {{{{{[[[[[[[]]]]]]]}}}}}
 
 ## **5. Ticketing System Integration (Freshdesk)**
-**5.1 Set Up Freshdesk**
+**Purpose**: Simulate enterprise helpdesk workflows with ticket lifecycle management.
+### **5.1 Set Up Freshdesk**
+**Business Need**: Demonstrate ITSM process adherence and documentation skills.
 
-**5.2 Log Mock Tickets**
-https://upfion.com/9sRCb
+
+Implementation Steps:
+
+1. **Create Free Freshdesk Account**
+- Go to Freshdesk.com → Sign up for **Free Forever** plan
+2. **Configure Helpdesk Settings**
+- Go to Freshdesk.com → Sign up for **Free Forever** plan
+- **Admin → Ticket Fields**: Add custom fields:
+    - `Employee ID` (Text)
+    - `Department` (Dropdown: IT/HR/Finance)
+- **Admin → Automation**: Set up:
+    - Auto-assign password reset tickets to "Tier 1 Support" group
+    - SLA: 30-minute response time for "High" urgency
+3. **Create Support Groups**
+    - Tier 1 Support (General IT)
+    - Tier 2 Support (Systems Administrators)
+
+📸 Screenshot:[[[[[[[[[]]]]]]]]]
+
+### **5.2 Logging Mock Tickets**  
+**Objective**: Simulate realistic helpdesk scenarios with proper documentation.
+
+### **Ticket Examples**  
+| Ticket Type | Subject  | Resolution Steps |
+|-|-|-|
+| Password Reset | "Can't log in - expired password" | 1. Verified user identity <br> 2. Reset password via ADUC<br>3. Enforced password change |
+| Account Lockout | "Locked out after 3 attempts" | 1. Identified lockout source via `Search-ADAccount -LockedOut` <br> 2. Unlocked account and educated user |
+| Hardware Request  | "New mouse needed"| 1. Created asset ticket <br> 2. Approved request per policy IT-205 <br> 3. Scheduled pickup|
+
+### **Best Practices**  
+1. **Ticket Notes Template**:  
+   ```text
+    [RESOLUTION]  
+   - Root Cause: {e.g., User forgot password}  
+   - Actions: {Step-by-step fixes}  
+   - User Comms: {Email/phone summary}  
+   - TTR: 00:25 (HH:MM)  
+   ```
+2. **SLA Tracking**:
+- Set priorities:
+    - P1 (Critical): 30-min response
+    - P2 (Normal): 4-hour response
+
+
+📸 Screenshots:[[[[[[[]]]]]]]
+Freshdesk ticket creation screen
+Ticket resolution timeline
+
+### **5.1.3 Advanced: API Integration (Optional)**  
+**Purpose**: Show programmatic ticket creation for automation scenarios.  
+
+#### **Python Example**  
+```python
+import requests
+
+# Configure API access
+api_key = "your_api_key_here"  # Get from Freshdesk Admin > Profile Settings
+domain = "yourdomain.freshdesk.com"
+url = f"https://{domain}/api/v2/tickets"
+
+# Create a mock ticket
+response = requests.post(url,
+    auth=(api_key, "X"),  # 'X' is a placeholder for blank password
+    json={
+        "subject": "VPN Access Request - Automated Ticket",
+        "description": "User needs VPN credentials per onboarding checklist",
+        "priority": 1,  # 1=Critical, 2=High, etc.
+        "tags": ["automation", "onboarding"]
+    },
+    headers={"Content-Type": "application/json"}
+)
+
+# Verify success
+if response.status_code == 201:
+    print(f"Ticket created! ID: {response.json()['id']}")
+else:
+    print(f"Error: {response.status_code} - {response.text}")
+```
+
+**How to Use This**
+
+- **Get API Key**:
+    - Freshdesk → Profile Settings → API Key
+- **Test Locally**:
+    - Run in VS Code/PyCharm with requests installed (pip install requests)
+- **Real-World Use Cases**:
+    - Auto-create tickets from monitoring alerts (e.g., "Server CPU High")
+    - Sync with HR systems for onboarding/offboarding
+
+📸 Screenshots:[[[[[[[]]]]]]]
