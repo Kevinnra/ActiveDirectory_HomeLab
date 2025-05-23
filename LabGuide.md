@@ -15,6 +15,7 @@
 
 💡 **Pro Tip**: Disable the virtual network adapter in VirtualBox during Windows Server installation to prevent internet connectivity. Re-enable it after setup is complete. *`This bypasses initial license verification while keeping your lab compliant.`*.
 
+----
 ### **1.2 Configure your Server:**  
 #### **Network Configuration**
 - Assign a **static IP** (e.g., `192.168.1.100`). 
@@ -25,35 +26,13 @@
 #### Time Settings
 - Set `[Your DC's Time Zone]` to match your physical location before promoting it.
 - Ensures proper time sync for domain authentication
+----
+### **1.3 Promote Server to Domain Controller**
 
-### **1.3 Promote Server to Domain Controller**  
-+ ### Method 1: Powerhell
+
     
-    1. Install **Active Directory Domain Services (AD DS)** via Server Manager.  
-    2. Run:  
-        ```powershell
-        #Install AD DS role
-        Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
-
-        
-        # Promote server to DC in new forest (will reboot automatically)
-        Install-ADDSForest `
-        -DomainName "mylab.local" `  #Set mine as "x.local"
-        -DomainNetbiosName "MYLAB" `  #Set mine as "X"
-        -ForestMode "WinThreshold" `
-        -DomainMode "WinThreshold" `
-        -InstallDNS:$true `
-        -NoRebootOnCompletion:$false `
-        -Force:$true 
-
-        # Verify
-        Get-ADDomainController
-        ```
-    📸   If installation was successful you will see something like this:
-
-    ![i](Screenshots/InstalledDomainController.png)
-
-+ ### Method 2: GUI
+    
++ #### <mark>Method 1: GUI</mark>
     #### Install AD DS Role
 
     1. Open Server Manager
@@ -71,7 +50,7 @@
     2. Select Promote this server to a domain controller
     3. Choose deployment configuration:
         - Add a new forest
-        - Enter root domain name `(e.g., mylab.local)`
+        - Enter root domain name `(e.g., x.local)`
     4. Set Directory Services Restore Mode (DSRM) password
     5. Click Next through remaining options (defaults are fine)
     6. Review prerequisites → Click Install
@@ -80,8 +59,38 @@
     📸    AD DS role successfully installed in Server Manager:
     ![](Screenshots/ServerManagerDashboard.png)
     ![](Screenshots/ServerManagerLocalServer.png)
-    
 
++ #### <mark style="background-color:rgb(47, 106, 224)">Method 2: Powerhell (Advanced)</mark>
+    <details>
+    <summary><b>[ click to expand ]</b></summary>
+
+    1. Install **Active Directory Domain Services (AD DS)** via Server Manager.  
+    2. Run:  
+        ```powershell
+        #Install AD DS role
+        Install-WindowsFeature AD-Domain-Services -IncludeManagementTools
+
+        
+        # Promote server to DC in new forest (will reboot automatically)
+        Install-ADDSForest `
+        -DomainName "mylab.local" `  # Set  as "x.local" 
+        -DomainNetbiosName "MYLAB" `  # Set as "X" 
+        -ForestMode "WinThreshold" `
+        -DomainMode "WinThreshold" `
+        -InstallDNS:$true `
+        -NoRebootOnCompletion:$false `
+        -Force:$true 
+
+        # Verify
+        Get-ADDomainController
+        ```
+    📸   If installation was successful you will see something like this:
+
+    ![i](Screenshots/InstalledDomainController.png)
+
+    </details>
+    
+----
 ### **1.4 Join a client to the Domain:**
 #### Prerequisites
 
@@ -89,7 +98,8 @@
 - Domain Controller (DC) fully configured
 - Network connectivity between DC and Win10 VM (both in NAT/Host-Only or Bridged mode)
 
-#### Method 1: GUI 
+
+#### <Mark> Method : GUI </Mark>
 
 ##### 1 Configure Network Settings:
 - Set Win10 DNS to ***point to your DC's IP*** ⚠️ (e.g., `192.168.1.100`)
@@ -98,7 +108,7 @@
 ##### 2 Join Domain:
 - Press `Win + R`, type `sysdm.cpl` → Enter
 - Go to **Computer Name** tab → Click **Change**...
-- Select **Domain** → Enter `myLab.local` (your domain name)
+- Select **Domain** → Enter `x.local` (your domain name)
 - Enter DC admin credentials when prompted (e.g., `x.local\Administrator`)
 - Restart when prompted
 
@@ -118,8 +128,12 @@
 
 📸 screenshot:
 ![](Screenshots/systemPropertiesDomain.png)
-___
-#### Method 2: PowerShell:
+
+#### <Mark>Method 2: PowerShell (Advanced):</Mark>
+<details>
+<summary><b>[Click to expand] </b></summary>
+
+
 ```Powershell 
     # Set DNS to DC's IP
     Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter).ifIndex -ServerAddresses "192.168.1.100"
@@ -145,9 +159,7 @@ ___
 ```cmd
     systeminfo | find "Domain"
 ```
-- should reference your domain (x.local) (image: 'B')
-
-
+- should reference your domain `(e.g., x.local)` (image: 'B')
 
 
 📸 screenshots:
@@ -155,6 +167,8 @@ ___
 ![](/Screenshots/shellSecureChannel.png)
 ##### B:
 ![](/Screenshots/cmdSysteminfoDomain.png)
+</details>
+<br>
 
 
 
@@ -174,7 +188,7 @@ ___
 
 **Purpose**: Structure your Active Directory with logical containers for users, computers, and groups.
 
-#### **Method 1: GUI (ADUC)**
+#### <Mark>**Method 1: GUI (ADUC)**</Mark>
 
 1. **Open Active Directory Users and Computers (ADUC)**
 - Press `Win + R` → type `dsa.msc` → Enter
@@ -200,7 +214,10 @@ ___
 ![](/Screenshots/OU_childOU_created.png)
 [[[[[fix last screenshot]]]]]
 
-#### **Method 2: Command Line (PowerShell)**
+
+#### <Mark>**Method 2: PowerShell (Advanced)**</Mark>
+<details>
+<summary><b> [ Click to expand ] </b></summary>
 
 Run PowerShell as Administrator:
 ```Powershell
@@ -228,16 +245,30 @@ Finance    OU=Finance,OU=Departments,DC=x,DC=local
 ```
 xxxScreenshotsXXX[[[[[[[[[[[]]]]]]]]]]]
 
+</details>
+
+
+
+
 ##### **Why OUs Matter ?**
 - Enables granular Group Policy application  
 - Simplifies user/computer management  
 - Mirrors real-world AD structures (e.g., HR gets different policies than IT)  
+---
+<br>
+
+
+
+
+
+
+
 
 
 ### **2.2 Create Test Users**
 **Purpose**: Populate your Active Directory with sample accounts for testing permissions, policies, and helpdesk workflows.
 
-#### Method 1: GUI (AD Users and Computers)
+#### <Mark>Method 1: GUI (AD Users and Computers)</Mark>
 
 1. **Open ADUC**
 - Press `Win + R` → type `dsa.msc` → Enter
@@ -259,8 +290,11 @@ xxxScreenshotsXXX[[[[[[[[[[[]]]]]]]]]]]
 - Click **Finish**
 - Repeat for additional users (e.g., `lando.norris`, `charles.leclerc`)
 
-**Screenshots**:
-#### Method 2: PowerShell (Bulk Creation)
+**Screenshots**:[[[[[[[[[]]]]]]]]]
+
+#### <Mark>Method 2: PowerShell (Bulk Creation, Advanced)</Mark>
+<details>
+<summary><b>[Click to expand] </b></summary>
 
 *Run PowerShell as Administrator in your Domain Controller:*
 ```Powershell
@@ -305,7 +339,7 @@ user 5       user5
 
 Screenhot[[[[[[]]]]]]
 
-**Best Practices for User Creation and Tips💡:** 
+### **Best Practices for User Creation and Tips💡:** 
 
 1. **Naming Conventions**:
     - Usernames: `firstname.lastname` (e.g., lewis.hamilton)
@@ -355,6 +389,10 @@ Screenhot[[[[[[]]]]]]
     - Bulk operations are essential during mergers/acquisitions  
 
 screenshot:[[[[[[]]]]]]
+</details>
+<br>
+
+
 
 
 
@@ -499,7 +537,7 @@ gpresult /r  # On workstation
 
 3. **Documentation**:  
 - *Ticket Notes*:  
-    "Reset password per policy #IT-103. User educated on password complexity requirements. Case closed."  
+    "Reset password per policy (e.g., #IT-103). User educated on password complexity requirements. Case closed."  
 
 📸 **Screenshots**:[[[[[[[[[[]]]]]]]]]
 - ADUC password reset dialog  
@@ -552,7 +590,6 @@ Implementation Steps:
 1. **Create Free Freshdesk Account**
 - Go to Freshdesk.com → Sign up for **Free Forever** plan
 2. **Configure Helpdesk Settings**
-- Go to Freshdesk.com → Sign up for **Free Forever** plan
 - **Admin → Ticket Fields**: Add custom fields:
     - `Employee ID` (Text)
     - `Department` (Dropdown: IT/HR/Finance)
@@ -581,7 +618,7 @@ Implementation Steps:
     [RESOLUTION]  
    - Root Cause: {e.g., User forgot password}  
    - Actions: {Step-by-step fixes}  
-   - User Comms: {Email/phone summary}  
+   - User Communication: {Email/phone summary}  
    - TTR: 00:25 (HH:MM)  
    ```
 2. **SLA Tracking**:
@@ -594,7 +631,7 @@ Implementation Steps:
 Freshdesk ticket creation screen
 Ticket resolution timeline
 
-### **5.1.3 Advanced: API Integration (Optional)**  
+### **5.3 Advanced: API Integration (Optional)**  
 **Purpose**: Show programmatic ticket creation for automation scenarios.  
 
 #### **Python Example**  
@@ -636,3 +673,35 @@ else:
     - Sync with HR systems for onboarding/offboarding
 
 📸 Screenshots:[[[[[[[]]]]]]]
+
+
+
+
+
+<details>
+<summary><b>⚙️ Bonus: API Integration (For Developers)</b></summary>
+<details>
+
+<summary>Python Example</summary>
+
+```python
+import requests
+response = requests.post("https://api.freshdesk.com/v2/tickets", auth=("key","X"))
+```
+</details>
+
+<details> <summary>PowerShell Example</summary>
+
+```powershell
+Invoke-RestMethod -Uri "https://api.freshdesk.com/v2/tickets" -Method Pos
+```
+</details>
+
+<details>
+<summary><b>[Click to expand] </b></summary>
+
+```Powershell
+hola
+```
+</details>
+
