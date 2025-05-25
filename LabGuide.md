@@ -3,9 +3,11 @@
 ## **Lab Overview**  
 - **Objective**: Simulate an enterprise IT environment with AD, helpdesk workflows, and ticketing.  
 - **Tools Used**: VirtualBox, Windows Server 2022, Windows 10,  Freshdesk.  
+<br>
+<br>
 
-## **Step 1: Setting Up the Lab**  
-### **1.1 Install Windows Server 2022 on VirtualBox**  
+## 🟢 **Step 1: Setting Up the Lab**  
+### 🔹 **1.1 Install Windows Server 2022 on VirtualBox**  
 - Download ISO from [Microsoft Evaluation Center](https://www.microsoft.com/en-us/evalcenter/evaluate-windows-server-2022).  
 - Create a new VM in VirtualBox (4GB RAM, 50GB HDD).  
 - Install **Windows Server 2022 (Desktop Experience)**.  
@@ -16,7 +18,7 @@
 💡 **Pro Tip**: Disable the virtual network adapter in VirtualBox during Windows Server installation to prevent internet connectivity. Re-enable it after setup is complete. *`This bypasses initial license verification while keeping your lab compliant.`*.
 
 ----
-### **1.2 Configure your Server:**  
+### 🔹 **1.2 Configure your Server:**  
 #### **Network Configuration**
 - Assign a **static IP** (e.g., `192.168.1.100`). 
 - Set the server's primary DNS to `127.0.0.1` (for AD functionality)
@@ -27,40 +29,39 @@
 - Set `[Your DC's Time Zone]` to match your physical location before promoting it.
 - Ensures proper time sync for domain authentication
 ----
-### **1.3 Promote Server to Domain Controller**
+### 🔹 **1.3 Promote Server to Domain Controller**
 
-
-    
-    
-+ #### <mark>Method 1: GUI</mark>
++ #### <mark>⭕️ **Method 1: GUI**</mark>
     #### Install AD DS Role
 
-    1. Open Server Manager
-    2. Click Add roles and features
-    3. Select Role-based installation → Click Next
-    4. Choose your server from the pool → Click Next
-    5. Check Active Directory Domain Services
-    6. Click Add Features when prompted
-    7. Click Next through remaining screens
-    8. Click Install
+    - Open Server Manager
+    - Click Add roles and features
+    - Select Role-based installation → Click Next
+    - Choose your server from the pool → Click Next
+    - Check Active Directory Domain Services
+    - Click Add Features when prompted
+    - Click Next through remaining screens
+    - Click Install
     
     #### Promote to Domain Controller
 
-    1. In Server Manager, click the flag notification icon
-    2. Select Promote this server to a domain controller
-    3. Choose deployment configuration:
+    - In Server Manager, click the flag notification icon
+    - Select Promote this server to a domain controller
+    - Choose deployment configuration:
         - Add a new forest
         - Enter root domain name `(e.g., x.local)`
-    4. Set Directory Services Restore Mode (DSRM) password
-    5. Click Next through remaining options (defaults are fine)
-    6. Review prerequisites → Click Install
-    7. Server will automatically reboot
+    - Set Directory Services Restore Mode (DSRM) password
+    - Click Next through remaining options (defaults are fine)
+    - Review prerequisites → Click Install
+    - Server will automatically reboot 
+  <br>
+  <br>
 
     📸    AD DS role successfully installed in Server Manager:
     ![](Screenshots/ServerManagerDashboard.png)
     ![](Screenshots/ServerManagerLocalServer.png)
 
-+ #### <mark style="background-color:rgb(47, 106, 224)">Method 2: Powerhell (Advanced)</mark>
++ #### <mark>⭕️ **Method 2: Powerhell (Advanced)**</mark>
     <details>
     <summary><b>[ click to expand ]</b></summary>
 
@@ -91,7 +92,7 @@
     </details>
     
 ----
-### **1.4 Join a client to the Domain:**
+### 🔹 **1.4 Join a client to the Domain:**
 #### Prerequisites
 
 - Windows 10 VM installed in VirtualBox/VMware
@@ -99,7 +100,7 @@
 - Network connectivity between DC and Win10 VM (both in NAT/Host-Only or Bridged mode)
 
 
-#### <Mark> Method : GUI </Mark>
+#### <Mark> ⭕️ **Method 1: GUI** </Mark>
 
 ##### 1 Configure Network Settings:
 - Set Win10 DNS to ***point to your DC's IP*** ⚠️ (e.g., `192.168.1.100`)
@@ -129,7 +130,7 @@
 📸 screenshot:
 ![](Screenshots/systemPropertiesDomain.png)
 
-#### <Mark>Method 2: PowerShell (Advanced):</Mark>
+#### <Mark>⭕️ **Method 2: PowerShell (Advanced):**</Mark>
 <details>
 <summary><b>[Click to expand] </b></summary>
 
@@ -169,26 +170,15 @@
 ![](/Screenshots/cmdSysteminfoDomain.png)
 </details>
 <br>
+<br>
 
+## 🟢 Step 2: Active Directory Post-Installation Configuration
 
-
-
-
-
-
-
-
-
-
-
-
-## 2. Active Directory Post-Installation Configuration
-
-### **2.1 Create Organizational Units (OUs)**
+### 🔹 **2.1 Create Organizational Units (OUs)**
 
 **Purpose**: Structure your Active Directory with logical containers for users, computers, and groups.
 
-#### <Mark>**Method 1: GUI (ADUC)**</Mark>
+#### <Mark>⭕️ **Method 1: GUI (ADUC)**</Mark>
 
 1. **Open Active Directory Users and Computers (ADUC)**
 - Press `Win + R` → type `dsa.msc` → Enter
@@ -199,7 +189,7 @@
 2. **Create Parent OU**
 - Right-click your domain (e.g., x.local)
 - Select **New** → **Organizational Unit**
-- Name: `Your_Parent_OU` (Set mine as 'Employees')
+- Name: `Your_Parent_OU` (Set mine as 'Departments')
 - You can **Uncheck** "Protect container from accidental deletion" (for lab simplicity)
 - Click **OK**
 3. **Create Child OUs**:
@@ -212,10 +202,9 @@
 📸 screenshots:
 ![](/Screenshots/creation_OU_GUI.png)
 ![](/Screenshots/OU_childOU_created.png)
-[[[[[fix last screenshot]]]]]
 
 
-#### <Mark>**Method 2: PowerShell (Advanced)**</Mark>
+#### <Mark>⭕️ **Method 2: PowerShell (Advanced)**</Mark>
 <details>
 <summary><b> [ Click to expand ] </b></summary>
 
@@ -228,7 +217,7 @@ Import-Module ActiveDirectory
 New-ADOrganizationalUnit -Name "Departments" -Path "DC=x,DC=local" -ProtectedFromAccidentalDeletion $false
 
 # Create child OUs
-"IT", "HR", "Finance" | ForEach-Object {
+"IT", "HR", "Sales" | ForEach-Object {
     New-ADOrganizationalUnit -Name $_ -Path "OU=Departments,DC=x,DC=local" -ProtectedFromAccidentalDeletion $false
 }
 
@@ -241,14 +230,12 @@ Name       DistinguishedName
 ----       -----------------
 IT         OU=IT,OU=Departments,DC=x,DC=local
 HR         OU=HR,OU=Departments,DC=x,DC=local
-Finance    OU=Finance,OU=Departments,DC=x,DC=local
+Sales    OU=Finance,OU=Departments,DC=x,DC=local
 ```
-xxxScreenshotsXXX[[[[[[[[[[[]]]]]]]]]]]
+Screenshot:
+![](Screenshots/PowerShell_output_showing_created_OUs.png)
 
 </details>
-
-
-
 
 ##### **Why OUs Matter ?**
 - Enables granular Group Policy application  
@@ -256,23 +243,16 @@ xxxScreenshotsXXX[[[[[[[[[[[]]]]]]]]]]]
 - Mirrors real-world AD structures (e.g., HR gets different policies than IT)  
 ---
 <br>
+<br>
 
-
-
-
-
-
-
-
-
-### **2.2 Create Test Users**
+### 🔹 **2.2 Create Test Users**
 **Purpose**: Populate your Active Directory with sample accounts for testing permissions, policies, and helpdesk workflows.
 
-#### <Mark>Method 1: GUI (AD Users and Computers)</Mark>
+#### <Mark>⭕️ **Method 1: GUI (AD Users and Computers)**</Mark>
 
 1. **Open ADUC**
 - Press `Win + R` → type `dsa.msc` → Enter
-- Navigate to your **target OU** (e.g., `IT` under `Departments` )
+- Navigate to your **target OU** (e.g., `Sales` under `Departments` )
 
 2. **Create Single User**
 - Right-click the OU → **New** → **User**
@@ -290,9 +270,10 @@ xxxScreenshotsXXX[[[[[[[[[[[]]]]]]]]]]]
 - Click **Finish**
 - Repeat for additional users (e.g., `lando.norris`, `charles.leclerc`)
 
-**Screenshots**:[[[[[[[[[]]]]]]]]]
+**Screenshots**:
+![](Screenshots/Creating_a_user_in_ADUC.png)
 
-#### <Mark>Method 2: PowerShell (Bulk Creation, Advanced)</Mark>
+#### <Mark> ⭕️ **Method 2: PowerShell (Bulk Creation, Advanced)**</Mark>
 <details>
 <summary><b>[Click to expand] </b></summary>
 
@@ -337,16 +318,19 @@ user 4       user4
 user 5       user5
 ```
 
-Screenhot[[[[[[]]]]]]
+Screenshots:
+![](Screenshots/Bulk_user_creation_via_PowerShell_1.png)
+![](Screenshots/Bulk_user_creation_via_PowerShell_2.png)
+![](Screenshots/Bulk_user_creation_via_PowerShell_3.png)
 
-### **Best Practices for User Creation and Tips💡:** 
+#### **Best Practices for User Creation and Tips💡:** 
 
 1. **Naming Conventions**:
     - Usernames: `firstname.lastname` (e.g., lewis.hamilton)
     - Email addresses: Match User Principal Name - UPN (`lewis.hamilton@x.local`)
 2. **Password Policy**:
-    - Lab: Use `PasswordNeverExpires` to avoid lockouts
-    - Production: Enforce periodic password changes
+    - <u>**Lab:**</u> Use `PasswordNeverExpires` to avoid lockouts
+    - <u>**Production:**</u> Enforce periodic password changes
 3. **Attributes to Set**:
     - Department, title, office/location and manager (for advanced GPO filtering:
     
@@ -384,32 +368,215 @@ Screenhot[[[[[[]]]]]]
     ```
 
     **Why This Matters in Production ?**  
-    - Automated user onboarding saves 10+ minutes per employee  
-    - Consistent naming conventions simplify troubleshooting  
-    - Bulk operations are essential during mergers/acquisitions  
+    - ⭐️ Automated user onboarding saves 10+ minutes per employee  
+    - ⭐️ Consistent naming conventions simplify troubleshooting  
+    - ⭐️ Bulk operations are essential during mergers/acquisitions  
 
-screenshot:[[[[[[]]]]]]
 </details>
 <br>
+<br>
+
+## 🟢 **3. Ticketing System Integration (Freshdesk)**
+**Purpose**: Simulate enterprise helpdesk workflows with ticket lifecycle management.
+### 🔹 **3.1 Set Up Freshdesk**
+**Business Need**: Demonstrate ITSM process adherence and documentation and workflow automation skills.
 
 
+Implementation Steps:
+
+1. **Create Free Freshdesk Account**
+- Go to Freshdesk.com → Sign up for **Free Forever** plan
+2. **Configure Helpdesk Settings**
+- **Admin → Ticket Fields**: Add custom fields:
+    - `Employee ID` (Text)
+    - `Department` (Dropdown: IT/HR/Finance)
+  
+3. **Create Support Groups**
+    - Tier 1 Support (General IT): Password resets, unlocks 
+    - Tier 2 Support (Systems Administrators): GPO/AD escalations  
+  
+### 🔹 **3.2 Logging Mock Tickets**  
+**Objective**: Simulate realistic helpdesk scenarios with proper documentation.
+
+### **Ticket Examples**  
+| Ticket Type | Subject  | Resolution Steps |
+|-|-|-|
+| Password Reset | "Can't log in - expired password" | 1. Verified user identity <br> 2. Reset password via ADUC<br>3. Enforced password change |
+| Account Lockout | "Locked out after 3 attempts" | 1. Identified lockout source via `Search-ADAccount -LockedOut` <br> 2. Unlocked account and educated user |
+| Hardware Request  | "New mouse needed"| 1. Created asset ticket <br> 2. Approved request per policy IT-205 <br> 3. Scheduled pickup|
+
+### **Best Practices**  
+1. **Ticket Notes Template**:  
+   ```text
+    [RESOLUTION]  
+   - Root Cause: {e.g., User forgot password}  
+   - Actions: {Step-by-step fixes}  
+   - User Communication: {Email/phone summary}  
+   - TTR: 00:25 (HH:MM)  
+   ```
+2. **Service Level Agreement (SLA) Tracking**:
+- Set priorities:
+    - P1 (Critical): 30-min response
+    - P2 (Normal): 4-hour response
+
+### 🔹 **3.3 Freshdesk Automation**
+**Objective:** Auto-assign password reset tickets to "Tier 1 Support" group:
+- **Admin → Automation**: Set up:<br>
+   **Rule Name:** Auto-Assign Password Tickets<br>
+   **Trigger:** Ticket contains "password" in subject and/or Tag is named "Password-reset"<br>
+   **Actions**: 
+     - Assign to Tier 1 Group
+     - Add tracking tags e.g. `password-reset`
+
+- SLA: 30-minute response time for "High" urgency
 
 
+📸 Screenshots:
+- Ticket `User` Creation Screen:
+![](Screenshots/freshdesk_ticket_creation.png)
+- Freshdesk automation overview:
+![](Screenshots/Freshdesk_automation_overview.png)
+- Verified Automation: Ticket sent to tier 1 Group and tagged.
+![](Screenshots/freshdesk_ticket_sent_to_tier1_and:tagged.png)
 
 
+### 🔹 **3.3 Advanced: API Integration with Python (Optional)**
+**Purpose**: Show programmatic ticket creation for automation scenarios.
+<details>
+<summary><b><mark>[Click to expand]</mark> </b></summary>
 
+#### **Python Example**  
+```python
+import requests
 
+# Configure API access
+api_key = "your_api_key_here"  # Get from Freshdesk Admin > Profile Settings
+domain = "yourdomain.freshdesk.com"
+url = f"https://{domain}/api/v2/tickets"
 
+# Required fields for ticket
+ticket_data = {
+    "subject": "New password request - Automated Ticket",
+    "description": "User forgot password need to get a new one",
+    "priority": 1, # 1= Critical, 2= High, etc. (required)
+    "status": 2,  # 2= Open, 3= pending, etc.  (required)
+    "tags": ["automation"],
+    "requester_id": 156012020510,  # Replace with valid requester ID from your Freshdesk
+    "custom_fields": {
+        "cf_department": "HR",
+        "cf_employee_id":"55" # Your custom fields name may vary
+    }
+}
 
+# Create a mock ticket / API call
+response = requests.post(url,
+    auth=(api_key, "X"), # 'X' is a placeholder for blank password
+    json=ticket_data,
+    headers={"Content-Type": "application/json"}
 
+# Verify success
+if response.status_code == 201:
+    print(f"Ticket created! ID: {response.json()['id']}")
+else:
+    print(f"Error: {response.status_code} - {response.text}")
+```
 
+**How to Use This**
 
+- **Get API Key**:
+    - Freshdesk → Profile Settings → API Key
+- **Test Locally**:
+    - Run in VS Code/PyCharm with requests installed (pip install requests)
+- **Real-World Use Cases**:
+    - Auto-create tickets from monitoring alerts (e.g., "Server CPU High")
+    - Sync with HR systems for onboarding/offboarding
 
+📸 Screenshots:
+-  VPN Access Request - Automated Ticket
+![](Screenshots/freshdesk_automated_python_1.png)
+- Automated  Ticket created - VPN Access Request 
+![](Screenshots/freshdesk_automated_ticket_created_1.png)
+-  New Password request - Automated Ticket
+![](Screenshots/freshdesk_automated_python_2.png)
+- Automated  Ticket created, and `Freshdesk automations applied `
+![](Screenshots/freshdesk_automated_ticked_created_2.png)
 
-## **3. Group Policy Configuration**
+</details>
+
+<br>
+<br>
+
+## 🟢 4. Helpdesk Simulation Workflows
+
+### 🔹 **4.1 Password Reset**
+**Scenario**: User calls saying "My password expired"  
+
+**Workflow**:  
+1. **Verify Identity**:  
+- Ask for employee ID and ticket number  
+- *Example Script*:  
+    "Thank you for calling IT. May I have your employee ID and the ticket number associated with this issue?"  
+
+2. **Reset Password**:  
+- **GUI (ADUC)**:  
+    - Right-click user → "Reset Password"  
+    - Set temporary password: `Temp@[Last4DigitsOfID]` (e.g., `Temp@1234`)  
+    - "User must change password at next logon"  
+
+- **PowerShell**:  
+    ```powershell
+    Set-ADAccountPassword -Identity "max.verstappen" -NewPassword (ConvertTo-SecureString "Temp@1234" -AsPlainText -Force) -Reset
+    Unlock-ADAccount -Identity "max.verstappen" # If locked out
+    ```
+
+3. **Documentation**:  
+- *Ticket Notes*:  
+    "Reset password per policy (e.g., #IT-103). User educated on password complexity requirements. Case closed."  
+
+📸 **Screenshots**:[[[[[[[[[[]]]]]]]]]
+- ADUC password reset dialog  
+- Freshdesk ticket resolution screen  
+---
+<br>
+
+### 🔹 **4.2 Account Lockout Troubleshooting**  
+**Scenario**: User reports "Account locked" after multiple failed attempts  
+
+**Diagnosis Steps**:  
+1. **Identify Lockout Source**:  
+   ```powershell
+   # Find locked account
+   Search-ADAccount -LockedOut | Select Name, LastLogonDate
+
+   # Check lockout events (Run on DC)
+   Get-EventLog -LogName Security -InstanceId 4740 -Newest 5 | Format-List
+   ```
+2. **Resolution**:
+    - **Unlock Account**:
+```powershell
+Unlock-ADAccount -Identity "max.verstappen"
+```
+ - **Educate User**:
+
+    "Your account was locked due to 5 failed attempts. Ensure Caps Lock is off and you're using the domain 'x.local'."
+3. **Prevention**:
+    - Deploy **Account Lockout Policy** via GPO:
+
+    `Computer Config → Policies → Windows Settings → Security Settings → Account Policies → Account Lockout Policy`
+    - Threshold: 10 attempts
+    - Duration: 30 minutes
+
+📸 Screenshots:
+
+PowerShell unlock command output
+GPO lockout policy settings {{{{{[[[[[[[]]]]]]]}}}}}
+<br>
+<br>
+
+## 🟢 **5. Group Policy Configuration**
 **Purpose**: Centrally manage security settings and workstation configurations across your domain.
 
-### **3.1 Enforce NIST-Compliant Password Policy**
+### 🔹 **5.1 Enforce NIST-Compliant Password Policy**
 **Business Need**: Meet security compliance requirements (e.g., NIST, ISO 27001).**Why?** 
 - Mitigates 81% of brute-force attacks (Verizon DBIR 2023)
 - Meets insurance/audit requirements (SOC2, ISO 27001)
@@ -436,41 +603,7 @@ gpupdate /force  # Applies changes immediately to DC
 ```
 [[[[[[[screenshots]]]]]]]
 
-
-### **3.2 Folder Redirection (example policy)**
-**Business Need**: Protect user data from device failures.
-
-**Implementation**:
-
-1. Create GPO named `User Data Protection`
-2. Configure:
-
-Path: `User Configuration → Policies → Windows Settings → Folder Redirection`
-- **Documents**: Redirect to `\\fileserver\users\%username%\Documents`
-- **Applies to**: Authenticated Users
-3. Set permissions on file server:
-```Powershell
-icacls "\\fileserver\users" /grant "Domain Users:(OI)(CI)(M)"
-```
-### **3.3 Disable USB Storage (example policy)**
-
-**Business Need**: Prevent data exfiltration (common in security-sensitive roles).
-
-**Implementation**:
-
-1. Create new GPO named `Device Restriction Policy`
-2. Navigate to:
-
-`Computer Configuration → Policies → Administrative Templates → System → Removable Storage Access`
-- **All Removable Storage classes**: **Deny all access**: Enabled
-3. Link to all computer OUs
-
-**Impact:**
-
-- Users see "Access Denied" when inserting USB drives
-- Logs events in Security log (Event ID 4657)
-
-### **3.4 Deploy Screensaver Lock Policy (example policy)**
+### 🔹 **5.2 Deploy Screensaver Lock Policy (example policy)**
 
 **Business Need**: Enforce workstation security for idle devices.
 
@@ -503,176 +636,6 @@ gpresult /r  # On workstation
 ### **Why These Policies Matter ?**  
 - Password policy reduces brute-force attack success by more than 80%
 - Screensaver locks prevent shoulder-surfing in open offices  
-- USB restrictions mitigate malware introduction risks  
-
-
-
-
-
-
-
-
-## 4. Helpdesk Simulation Workflows
-
-### **4.1 Password Reset**
-**Scenario**: User calls saying "My password expired"  
-
-**Workflow**:  
-1. **Verify Identity**:  
-- Ask for employee ID and ticket number  
-- *Example Script*:  
-    "Thank you for calling IT. May I have your employee ID and the ticket number associated with this issue?"  
-
-2. **Reset Password**:  
-- **GUI (ADUC)**:  
-    - Right-click user → "Reset Password"  
-    - Set temporary password: `Temp@[Last4DigitsOfID]` (e.g., `Temp@1234`)  
-    - "User must change password at next logon"  
-
-- **PowerShell**:  
-    ```powershell
-    Set-ADAccountPassword -Identity "max.verstappen" -NewPassword (ConvertTo-SecureString "Temp@1234" -AsPlainText -Force) -Reset
-    Unlock-ADAccount -Identity "max.verstappen" # If locked out
-    ```
-
-3. **Documentation**:  
-- *Ticket Notes*:  
-    "Reset password per policy (e.g., #IT-103). User educated on password complexity requirements. Case closed."  
-
-📸 **Screenshots**:[[[[[[[[[[]]]]]]]]]
-- ADUC password reset dialog  
-- Freshdesk ticket resolution screen  
----
-
-
-
-
-### **4.2 Account Lockout Troubleshooting**  
-**Scenario**: User reports "Account locked" after multiple failed attempts  
-
-**Diagnosis Steps**:  
-1. **Identify Lockout Source**:  
-   ```powershell
-   # Find locked account
-   Search-ADAccount -LockedOut | Select Name, LastLogonDate
-
-   # Check lockout events (Run on DC)
-   Get-EventLog -LogName Security -InstanceId 4740 -Newest 5 | Format-List
-   ```
-2. **Resolution**:
-    - **Unlock Account**:
-```powershell
-Unlock-ADAccount -Identity "max.verstappen"
-```
- - **Educate User**:
-
-    "Your account was locked due to 5 failed attempts. Ensure Caps Lock is off and you're using the domain 'x.local'."
-3. **Prevention**:
-    - Deploy **Account Lockout Policy** via GPO:
-
-    `Computer Config → Policies → Windows Settings → Security Settings → Account Policies → Account Lockout Policy`
-    - Threshold: 10 attempts
-    - Duration: 30 minutes
-
-📸 Screenshots:
-
-PowerShell unlock command output
-GPO lockout policy settings {{{{{[[[[[[[]]]]]]]}}}}}
-
-## **5. Ticketing System Integration (Freshdesk)**
-**Purpose**: Simulate enterprise helpdesk workflows with ticket lifecycle management.
-### **5.1 Set Up Freshdesk**
-**Business Need**: Demonstrate ITSM process adherence and documentation skills.
-
-
-Implementation Steps:
-
-1. **Create Free Freshdesk Account**
-- Go to Freshdesk.com → Sign up for **Free Forever** plan
-2. **Configure Helpdesk Settings**
-- **Admin → Ticket Fields**: Add custom fields:
-    - `Employee ID` (Text)
-    - `Department` (Dropdown: IT/HR/Finance)
-- **Admin → Automation**: Set up:
-    - Auto-assign password reset tickets to "Tier 1 Support" group
-    - SLA: 30-minute response time for "High" urgency
-3. **Create Support Groups**
-    - Tier 1 Support (General IT)
-    - Tier 2 Support (Systems Administrators)
-
-📸 Screenshot:[[[[[[[[[]]]]]]]]]
-
-### **5.2 Logging Mock Tickets**  
-**Objective**: Simulate realistic helpdesk scenarios with proper documentation.
-
-### **Ticket Examples**  
-| Ticket Type | Subject  | Resolution Steps |
-|-|-|-|
-| Password Reset | "Can't log in - expired password" | 1. Verified user identity <br> 2. Reset password via ADUC<br>3. Enforced password change |
-| Account Lockout | "Locked out after 3 attempts" | 1. Identified lockout source via `Search-ADAccount -LockedOut` <br> 2. Unlocked account and educated user |
-| Hardware Request  | "New mouse needed"| 1. Created asset ticket <br> 2. Approved request per policy IT-205 <br> 3. Scheduled pickup|
-
-### **Best Practices**  
-1. **Ticket Notes Template**:  
-   ```text
-    [RESOLUTION]  
-   - Root Cause: {e.g., User forgot password}  
-   - Actions: {Step-by-step fixes}  
-   - User Communication: {Email/phone summary}  
-   - TTR: 00:25 (HH:MM)  
-   ```
-2. **SLA Tracking**:
-- Set priorities:
-    - P1 (Critical): 30-min response
-    - P2 (Normal): 4-hour response
-
-
-📸 Screenshots:[[[[[[[]]]]]]]
-Freshdesk ticket creation screen
-Ticket resolution timeline
-
-### **5.3 Advanced: API Integration (Optional)**  
-**Purpose**: Show programmatic ticket creation for automation scenarios.  
-
-#### **Python Example**  
-```python
-import requests
-
-# Configure API access
-api_key = "your_api_key_here"  # Get from Freshdesk Admin > Profile Settings
-domain = "yourdomain.freshdesk.com"
-url = f"https://{domain}/api/v2/tickets"
-
-# Create a mock ticket
-response = requests.post(url,
-    auth=(api_key, "X"),  # 'X' is a placeholder for blank password
-    json={
-        "subject": "VPN Access Request - Automated Ticket",
-        "description": "User needs VPN credentials per onboarding checklist",
-        "priority": 1,  # 1=Critical, 2=High, etc.
-        "tags": ["automation", "onboarding"]
-    },
-    headers={"Content-Type": "application/json"}
-)
-
-# Verify success
-if response.status_code == 201:
-    print(f"Ticket created! ID: {response.json()['id']}")
-else:
-    print(f"Error: {response.status_code} - {response.text}")
-```
-
-**How to Use This**
-
-- **Get API Key**:
-    - Freshdesk → Profile Settings → API Key
-- **Test Locally**:
-    - Run in VS Code/PyCharm with requests installed (pip install requests)
-- **Real-World Use Cases**:
-    - Auto-create tickets from monitoring alerts (e.g., "Server CPU High")
-    - Sync with HR systems for onboarding/offboarding
-
-📸 Screenshots:[[[[[[[]]]]]]]
 
 
 
