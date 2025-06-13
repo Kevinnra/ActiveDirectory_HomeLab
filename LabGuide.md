@@ -492,14 +492,14 @@ else:
     - Sync with HR systems for onboarding/offboarding
 
 📸 Screenshots:
--  VPN Access Request - Automated Ticket
+-  VPN Access Request - Automated Ticket - Python
 ![](Screenshots/freshdesk_automated_python_1.png)
-- Automated  Ticket created - VPN Access Request 
+- Automated  Ticket created - VPN Access Request - Freshdesk
 ![](Screenshots/freshdesk_automated_ticket_created_1.png)
--  New Password request - Automated Ticket
+-  New Password request - Automated Ticket - Python
 ![](Screenshots/freshdesk_automated_python_2.png)
 - Automated  Ticket created, and `Freshdesk automations applied `
-![](Screenshots/freshdesk_automated_ticked_created_2.png)
+![](Screenshots/freshdesk_automated_ticket_created_2.png)
 
 </details>
 
@@ -533,9 +533,13 @@ else:
 - *Ticket Notes*:  
     "Reset password per policy (e.g., #IT-103). User educated on password complexity requirements. Case closed."  
 
-📸 **Screenshots**:[[[[[[[[[[]]]]]]]]]
+📸 **Screenshots**:
 - ADUC password reset dialog  
+![](Screenshots/helpdesk-password-reset.png)
+- User screen - new password notification
+![](Screenshots/helpdesk-password-reset-chage-password-at-login.png)
 - Freshdesk ticket resolution screen  
+![](Screenshots/helpdesk-password-reset-resolved-ticket.png)
 ---
 <br>
 
@@ -553,9 +557,20 @@ else:
    ```
 2. **Resolution**:
     - **Unlock Account**:
-```powershell
-Unlock-ADAccount -Identity "max.verstappen"
-```
+    ```powershell
+    Unlock-ADAccount -Identity "max.verstappen"
+    ```
+
+      - **Verify Unlock Account**
+     ```powershell
+    # Verify
+    Get-ADUser -Identity "max.verstappen" -Properties LockedOut | Select Name, LockedOut
+
+    #expected output
+    Name      LockedOut
+    ----      ---------
+    max verstappen     False
+    ```
  - **Educate User**:
 
     "Your account was locked due to 5 failed attempts. Ensure Caps Lock is off and you're using the domain 'x.local'."
@@ -567,9 +582,11 @@ Unlock-ADAccount -Identity "max.verstappen"
     - Duration: 30 minutes
 
 📸 Screenshots:
-
-PowerShell unlock command output
-GPO lockout policy settings {{{{{[[[[[[[]]]]]]]}}}}}
+- User account locked
+    ![](Screenshots/4.2-Account-locked-user.png)
+- PowerShell unlock command output
+    ![](Screenshots/4.2-Account-unlocked-verification.png)
+___
 <br>
 <br>
 
@@ -601,7 +618,11 @@ Path: `Computer Configuration → Policies → Windows Settings → Security Set
 ```powershell
 gpupdate /force  # Applies changes immediately to DC
 ```
-[[[[[[[screenshots]]]]]]]
+📸 Screenshots:
+- GPO password policy
+    ![](Screenshots/5.1-gpo_password_policy.png)
+- PowerShell unlock command output
+    ![](Screenshots/5.1-password_policy_verification.png)
 
 ### 🔹 **5.2 Deploy Screensaver Lock Policy (example policy)**
 
@@ -609,10 +630,11 @@ gpupdate /force  # Applies changes immediately to DC
 
 **Implementation**:
 
-1. Create new GPO:
+1. Open `gpmc.msc`
+2. Create new GPO:
 - Right-click **Group Policy Objects** → New
 - Name: `Workstation Security Baseline`
-2. Configure:
+1. Configure:
 
 
 Path: `User Configuration → Policies → Administrative Templates → Control Panel → Personalization`
@@ -621,16 +643,29 @@ Path: `User Configuration → Policies → Administrative Templates → Control 
 - **Password protect the screen saver**: Enabled
 3. Link to **Workstations OU**:
 - Right-click OU → **Link an Existing GPO** → Select policy
-📸 Screenshot:
-Screensaver GPO
-
+  
 **Verification**:
 
 - Log into test workstation → Wait 15 minutes → Verify screensaver locks
 - Check applied policy:
 ```powershell
-gpresult /r  # On workstation
+# For specific GPO (replace with your policy name)
+
+Get-GPOReport -Name "Workstation Security Baseline" -ReportType HTML -Path "$env:USERPROFILE\Desktop\GPO_Report.html"
+
+# Locate the .html file in Desktop and open it in browser
 ```
+
+📸 Screenshot:
+1. GPO Configuration:  
+   ![](Screenshots/5.2-GPO-Configuration.png)  
+   *Key settings: 15-minute timeout with password protection*  
+
+2. GPO policy  linked to "Departments" GPO:  
+   ![](Screenshots/5.2-linked-policy.png)  
+
+3. GPO .html report:  
+   ![](Screenshots/5.2-GPO-report.png)  
 
 
 ### **Why These Policies Matter ?**  
@@ -663,7 +698,7 @@ Invoke-RestMethod -Uri "https://api.freshdesk.com/v2/tickets" -Method Pos
 <details>
 <summary><b>[Click to expand] </b></summary>
 
-```Powershell
+```PowershellFmi la
 hola
 ```
 </details>
