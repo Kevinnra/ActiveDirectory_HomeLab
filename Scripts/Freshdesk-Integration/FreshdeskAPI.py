@@ -1,9 +1,38 @@
+"""
+Freshdesk Ticket Automation Script
+=================================
+
+DESCRIPTION:
+    Creates tickets in Freshdesk via API with customizable fields.
+    Used for simulating helpdesk workflows in AD lab environment.
+
+FEATURES:
+    - Custom ticket creation with priority/status control
+    - Department-specific routing via custom fields
+    - Error handling and response validation
+
+SECURITY NOTE:
+    🔒 ALWAYS store API keys in environment variables or secret management tools.
+    Never hardcode in production (sample usage only).
+
+AUTHOR:
+    KEVINN RAMIREZ | admin@kevinnramirez.com
+    Project: Active Directory & Helpdesk Simulation Lab
+
+REQUIREMENTS:
+    - Python 3.6+
+    - requests library (pip install requests)
+    - Freshdesk API v2 access
+
+"""
+
+
 import requests
 
 
 # Configuration
-api_key = "1ch6IxCLxXG5st7Mtps" # 🔴 Replace with environment variable in production!
-domain = "uberkevinnra.freshdesk.com"
+api_key = "API KEY" # 🔴 Replace with environment variable in production!
+domain = "YOURDOMAIN.freshdesk.com"
 url = f"https://{domain}/api/v2/tickets"
 
 # Required fields for ticket

@@ -34,12 +34,14 @@
 
 - AD-Helpdesk-Lab/
 
-    - **Lab-Guide.md** - Complete step-by-step documentation
+    - **Lab-Guide.md** → Complete step-by-step documentation
 
-  - Screenshots/ - Verification images
-  - Scripts/ - Automation scripts
-    - Bulk-User-Creation.ps1
-    - Freshdesk-API.py
+  - Screenshots/ → Verification images
+  - Scripts/ → Automation scripts
+    - Freshdesk-Integration/
+    - GPO-Management
+    - User-Management
+    - Inputs
   
 ## 🖼️ Lab Preview
 
@@ -52,7 +54,7 @@
 
 ## 📖 Explore the Full Lab
 
-[➡️ **Detailed Lab Walkthrough**](/Documentation/AD_lab.md) 
+[➡️ **Detailed Lab Walkthrough**](./LabGuide.md) 
 
 
 
@@ -61,7 +63,7 @@
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-🔹 Connect: [GitHub](https://github.com/Kevinnra)
+🔹 Connect: [Email](admin@kevinnramirez.com)
 
 🔹 Portfolio: [www.kevinnramirez.com](www.kevinnramirez.com)
 
