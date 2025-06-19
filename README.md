@@ -63,7 +63,7 @@
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-🔹 Connect: [📧 Email Me](mailto:admin@kevinnramirez.com?subject=Regarding%20Your%20AD%20Lab%20Project&body=Hello%20[Your Name],%0A%0AI%20saw%20your%20Active%20Directory%20lab...)
+🔹 Connect: [📧 Email Me](mailto:admin@kevinnramirez.com?subject=Regarding%20Your%20AD%20Lab%20Project&body=Hello%20Kevinn,%0A%0AI%20saw%20your%20Active%20Directory%20lab...)
 
 🔹 Portfolio: [www.kevinnramirez.com](www.kevinnramirez.com)
 
