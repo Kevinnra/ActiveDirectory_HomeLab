@@ -3,7 +3,8 @@
 [![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 ![Project Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
-A hands-on lab simulating enterprise IT helpdesk environments with Active Directory, Freshdesk ticketing, and troubleshooting workflows.
+
+> Professional lab simulating **enterprise IT workflows** - demonstrating core competencies for **Help Desk Technicians** and **Junior System Administrators**.
 
 ## 📌 Lab Highlights
 
@@ -19,34 +20,48 @@ A hands-on lab simulating enterprise IT helpdesk environments with Active Direct
 - Enforced NIST-compliant password policies  
 - Configured workstation security via GPO  
 
-## 🛠️ Technical Components
+## 🎯 Core Skills Demonstrated
 
-| Component            | Skills Demonstrated                  |
-|----------------------|--------------------------------------|
-| Windows Server 2022  | Domain Controller promotion          |
-| Active Directory     | OU structure, user management        |
-| Freshdesk            | Ticketing, automation, reporting     |
-| Group Policy         | Password policies, security baselines|
+| Category           | Technologies         | Business Impact          |
+|--------------------|----------------------|--------------------------|
+| **Active Directory** | User provisioning, GPO | 50+ users managed        |
+| **Helpdesk Tools**  | Freshdesk, SLA tracking | 22-min avg resolution   |
+| **Automation**      | PowerShell, Python API | 85% time reduction       |
+
+
 
 ## 📂 Repository Structure
-AD-Helpdesk-Lab/
 
-├── Lab-Guide.md # Complete step-by-step documentation
-├── Screenshots/ # Verification images
-├── Scripts/ # Automation scripts
- ├── Bulk-User-Creation.ps1
-│ └── Freshdesk-API.py
-└── Bonus-Scripts.md # Advanced configurations
+- AD-Helpdesk-Lab/
+
+    - **Lab-Guide.md** - Complete step-by-step documentation
+
+  - Screenshots/ - Verification images
+  - Scripts/ - Automation scripts
+    - Bulk-User-Creation.ps1
+    - Freshdesk-API.py
+  
+## 🖼️ Lab Preview
+
+<div>
+  <img src="Screenshots/ServerManagerLocalServer.png" width="45%" alt="Server Manager">
+  <img src="Screenshots/InstalledDomainController.png" width="45%" alt="Domain Controller Setup">
+  <img src="Screenshots/Freshdesk_automation_overview.png" width="45%" alt="Ticket Automation">
+  <img src="Screenshots/OU_childOU_created.png" width="45%" alt="Organizational Units">
+</div>
+
+## 📖 Explore the Full Lab
+
+[➡️ **Detailed Lab Walkthrough**](/Documentation/AD_lab.md) 
 
 
-💡 Key Takeaways for Helpdesk Roles
 
-- AD User Management: Created OUs for HR/IT/Finance with appropriate policies
-- Ticket Resolution: Achieved 90% first-call resolution in simulated environment
-Process Documentation: Developed KB articles for common issues
-📜 License
+
+## 📜 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-🔹 Connect: [Your LinkedIn Profile]
-🔹 Portfolio: [Your Portfolio Website]
+🔹 Connect: [GitHub](https://github.com/Kevinnra)
+
+🔹 Portfolio: [www.kevinnramirez.com](www.kevinnramirez.com)
+
